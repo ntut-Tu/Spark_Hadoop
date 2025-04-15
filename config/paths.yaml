@@ -1,5 +1,5 @@
 data:
-  raw: data/raw/students.csv
+  raw: data/raw/Students_Grading_Dataset.csv
   interim: data/interim/processed.parquet
   processed: data/processed/final.parquet
 model:
