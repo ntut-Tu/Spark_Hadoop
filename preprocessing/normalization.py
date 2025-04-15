@@ -4,12 +4,11 @@ from preprocessing.feature_select import get_background_features
 
 
 def apply_scaling(df):
-    assembler = VectorAssembler(
-        inputCols=["Study_Hours_per_Week", "Parent_Education_Level_Index", "Family_Income_Level_Index", "mental_score"],
-        outputCol="features_raw"
-    )
+    input_cols = get_background_features()
+
+    assembler = VectorAssembler(inputCols=input_cols, outputCol="features_vector")
     df = assembler.transform(df)
 
-    scaler = StandardScaler(inputCol=get_background_features(), outputCol="features", withStd=True, withMean=True)
+    scaler = StandardScaler(inputCol="features_vector", outputCol="features", withStd=True, withMean=True)
     model = scaler.fit(df)
     return model.transform(df)
