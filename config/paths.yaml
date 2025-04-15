@@ -1,0 +1,7 @@
+data:
+  raw: data/raw/students.csv
+  interim: data/interim/processed.parquet
+  processed: data/processed/final.parquet
+model:
+  score_cluster: models/score_cluster_model
+  background_cluster: models/background_cluster_model
