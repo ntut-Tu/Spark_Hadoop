@@ -8,4 +8,5 @@ def run(df, config):
 
     kmeans = KMeans(k=3, featuresCol="score_vector", predictionCol="score_cluster")
     model = kmeans.fit(df)
-    model.save(config['model']['score_cluster'])
+    model.write().overwrite().save(config['model']['score_cluster'])
+    return model.transform(df)
