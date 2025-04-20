@@ -12,6 +12,7 @@ print("📦 interim 路徑:", config['data']['interim'])
 print("📦 processed 路徑:", config['data']['processed'])
 
 spark = SparkSession.builder.appName("StudentPreprocessing").getOrCreate()
+spark.sparkContext.setLogLevel("ERROR")
 
 # Load data
 df = load_data.read_raw_data(spark, config['data']['raw'])
@@ -27,8 +28,11 @@ df.write.mode("overwrite").parquet(config['data']['interim'])
 
 # Clustering
 df = score_cluster.run(df, config)
-df = background_cluster.run(df, config)
-cluster_analysis.cross_tab(df, config)
+df.write.mode("overwrite").parquet("output/score_cluster")
+df1 = df.select("student_id", "score_cluster")
+df2 = background_cluster.run(df, config)
+df2.write.mode("overwrite").parquet("output/background_cluster")
+cluster_analysis.cross_tab(df1, df2, config)
 
 # Save processed data
 print("✅ 正在寫入 processed 資料至 HDFS...")

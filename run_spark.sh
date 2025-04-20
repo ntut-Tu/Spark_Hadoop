@@ -33,8 +33,7 @@ echo "📥 將 HDFS 結果下載到本地..."
 mkdir -p output/interim output/processed output/crosstab
 
 # 從 HDFS 複製 parquet 結果
-hdfs dfs -get /data/interim/ output/interim/
-hdfs dfs -get /data/processed/ output/processed/
+hdfs dfs -get / output/
 
 # 複製交叉表結果（csv 是目錄形式）
 hdfs dfs -getmerge /data/processed/cluster_crosstab.csv output/crosstab/cluster_crosstab.csv
