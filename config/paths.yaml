@@ -1,7 +1,10 @@
 data:
+  predict: data/predict/predict.csv
   raw: data/raw/Students_Grading_Dataset.csv
-  interim: data/interim/processed.parquet
-  processed: data/processed/final.parquet
+  interim: data/interim
+  processed: data/processed/final
+  full: data/full
+  predict_output: data/processed/predict
 
 model:
   score_cluster: models/score_cluster_model
