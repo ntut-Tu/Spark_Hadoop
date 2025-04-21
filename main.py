@@ -4,6 +4,7 @@ from pyspark.sql import SparkSession
 from config.config_loader import load_config
 from preprocessing import load_data, transformers, normalization, mental_score, background_score
 from clustering import score_cluster, background_cluster, cluster_analysis
+from preprocessing.label_mapper import label_mapping
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(BASE_DIR, 'config/paths.yaml')
@@ -16,6 +17,7 @@ spark.sparkContext.setLogLevel("ERROR")
 
 # Load data
 df = load_data.read_raw_data(spark, config['data']['raw'])
+origin_data = df.select("*")
 
 # Preprocessing
 df = transformers.apply_transformations(df)
@@ -29,12 +31,15 @@ df.write.mode("overwrite").parquet(config['data']['interim'])
 
 # Clustering
 df = score_cluster.run(df, config)
-df.write.mode("overwrite").parquet("output/score_cluster")
 df1 = df.select("student_id", "score_cluster")
-df2 = background_cluster.run(df, config)
-df2.write.mode("overwrite").parquet("output/background_cluster")
+df = background_cluster.run(df, config)
+df2 = df.select("student_id","background_cluster")
 cluster_analysis.cross_tab(df1, df2, config)
 
 # Save processed data
 print("✅ 正在寫入 processed 資料至 HDFS...")
-df.write.mode("overwrite").parquet(config['data']['processed'])
+#df.write.mode("overwrite").parquet(config['data']['processed'])
+full_output = origin_data.join(df1,on="student_id",how="inner")
+full_output = full_output.join(df2,on="student_id",how="inner")
+full_output = label_mapping(full_output)
+full_output.write.mode("overwrite").parquet(config['data']['full'])
