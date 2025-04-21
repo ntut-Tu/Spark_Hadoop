@@ -1,6 +1,6 @@
 from pyspark.ml.feature import VectorAssembler, StandardScaler
 
-from preprocessing.feature_select import get_background_features
+from config.feature_select import get_background_features
 
 
 def apply_scaling(df):
