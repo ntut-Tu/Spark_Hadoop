@@ -1,8 +1,7 @@
 from pyspark.ml.clustering import KMeans
+from pyspark.ml.feature import VectorAssembler
 
 def run(df, config):
-    from pyspark.ml.feature import VectorAssembler
-
     assembler = VectorAssembler(inputCols=["Total_Score"], outputCol="score_vector")
     df = assembler.transform(df)
 

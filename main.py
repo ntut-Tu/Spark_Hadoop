@@ -2,7 +2,7 @@ import os
 import yaml
 from pyspark.sql import SparkSession
 from config.config_loader import load_config
-from preprocessing import load_data, transformers, normalization, mental_score
+from preprocessing import load_data, transformers, normalization, mental_score, background_score
 from clustering import score_cluster, background_cluster, cluster_analysis
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -20,6 +20,7 @@ df = load_data.read_raw_data(spark, config['data']['raw'])
 # Preprocessing
 df = transformers.apply_transformations(df)
 df = mental_score.compute_mental_score(df)
+df = background_score.compute_background_score(df)
 df = normalization.apply_scaling(df)
 
 # Save interim data
