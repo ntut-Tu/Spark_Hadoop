@@ -4,7 +4,7 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
     </content>
-    <orderEntry type="jdk" jdkName="Remote Python 3.12.3 (sftp://master@192.168.100.10:22/home/master/.virtualenvs/Spark_AI/bin/python)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.12 (Spark_AI)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

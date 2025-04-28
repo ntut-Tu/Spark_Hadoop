@@ -3,3 +3,6 @@ py4j==0.10.9.7
 pyspark==3.5.5
 PyYAML==6.0.2
 setuptools==78.1.0
+umap~=0.1.1
+matplotlib~=3.10.1
+pyspark-stubs~=3.0.0.post3
