@@ -5,6 +5,7 @@ from config.config_loader import load_config
 from preprocessing import load_data, transformers, normalization, mental_score, background_score
 from clustering import score_cluster, background_cluster, cluster_analysis
 from preprocessing.label_mapper import label_mapping
+from utils.column_clear import clean_column_names
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(BASE_DIR, 'config/paths.yaml')
@@ -27,6 +28,7 @@ df = normalization.apply_scaling(df)
 
 # Save interim data
 print("✅ 正在寫入 interim 資料至 HDFS...")
+df = clean_column_names(df)
 df.write.mode("overwrite").parquet(config['data']['interim'])
 
 # Clustering

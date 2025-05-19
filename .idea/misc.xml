@@ -3,5 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="Remote Python 3.12.3 (sftp://master@192.168.100.10:22/home/master/.virtualenvs/Spark_AI/bin/python)" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12 (Spark_AI)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.11 (Spark_AI)" project-jdk-type="Python SDK" />
 </project>
