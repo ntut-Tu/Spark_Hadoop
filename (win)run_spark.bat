@@ -26,7 +26,6 @@ docker exec -it namenode hdfs dfs -chmod -R 777 /models
 
 :: 檢查 HDFS 是否已有檔案
 docker exec -it namenode hdfs dfs -test -e %RAW_HDFS_PATH%
-docker exec -it namenode hdfs dfs -chmod -R 777 /data
 if errorlevel 1 (
     echo 📤 上傳資料到 HDFS: %RAW_HDFS_PATH%
     docker exec -it namenode hdfs dfs -put /data/raw/Students_Grading_Dataset.csv /data/raw/
