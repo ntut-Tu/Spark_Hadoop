@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <property>
+    <name>dfs.replication</name>
+    <value>1</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.edits.dir</name>
+    <value>file:///opt/hadoopdata/hdfs/namenode,file:///opt/hadoopdata/hdfs/namenode_backup</value>
+  </property>
+
+  <property>
+    <name>dfs.datanode.data.dir</name>
+    <value>file:///opt/hadoopdata/hdfs/datanode</value>
+  </property>
+
+  <property>
+    <name>dfs.permissions.enabled</name>
+    <value>false</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.http-address</name>
+    <value>hadoop-master:9870</value>
+  </property>
+</configuration>
