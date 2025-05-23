@@ -21,27 +21,20 @@ docker exec -it master hdfs dfs -mkdir -p /models/score_cluster_model
 docker exec -it master hdfs dfs -mkdir -p /models/background_cluster_model
 
 :: 修改權限
-docker exec -it namenode hdfs dfs -chmod -R 777 /data
-docker exec -it namenode hdfs dfs -chmod -R 777 /models
+docker exec -it master hdfs dfs -chmod -R 777 /data
+docker exec -it master hdfs dfs -chmod -R 777 /models
 
 :: 檢查 HDFS 是否已有檔案
-docker exec -it namenode hdfs dfs -test -e %RAW_HDFS_PATH%
+docker exec -it master hdfs dfs -test -e %RAW_HDFS_PATH%
 if errorlevel 1 (
     echo 📤 上傳資料到 HDFS: %RAW_HDFS_PATH%
-    docker exec -it namenode hdfs dfs -put /data/raw/Students_Grading_Dataset.csv /data/raw/
+    docker exec -it master hdfs dfs -put /data/raw/Students_Grading_Dataset.csv /data/raw/
 ) else (
     echo ✅ HDFS 檔案已存在，略過上傳
 )
 
 :: 提交 Spark 任務（直接使用容器內的 /app 路徑）
-docker exec -it spark-master spark-submit ^
-    --master spark://spark-master:7077 ^
-    --conf spark.driver.host=spark-master ^
-    --conf spark.driver.bindAddress=0.0.0.0 ^
-    --conf spark.executor.memory=4g ^
-    --conf spark.driver.memory=4g ^
-    --conf spark.ui.port=4040 ^
-    /app/main.py
+docker exec -it spark-client spark-submit --master yarn /app/main.py
 
 echo fetch data from hdfs haven't been done yet :(
 pause
