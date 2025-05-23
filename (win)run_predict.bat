@@ -1,30 +1,32 @@
 @echo off
-echo WIP !
-@REM chcp 65001
-@REM set BASE_DIR=%~dp0
-@REM set PREDICT_LOCAL_PATH=%BASE_DIR%data\predict\predict.csv
-@REM set PREDICT_HDFS_PATH=/data/predict/predict.csv
-@REM
-@REM if not exist %PREDICT_LOCAL_PATH% (
-@REM     echo ❌ 找不到要預測的資料: %PREDICT_LOCAL_PATH%
-@REM     exit /b 1
-@REM )
-@REM
-@REM docker exec -it namenode hdfs dfs -test -e %PREDICT_HDFS_PATH%
-@REM if errorlevel 1 (
-@REM     echo 📤 上傳預測資料到 HDFS: %PREDICT_HDFS_PATH%
-@REM     docker exec -it namenode hdfs dfs -mkdir -p /data/predict
-@REM     docker exec -it namenode hdfs dfs -put /host_mnt/%PREDICT_LOCAL_PATH:/data/predict/predict.csv
-@REM ) else (
-@REM     echo ✅ HDFS 上已有預測資料，略過上傳
-@REM )
-@REM
-@REM docker exec -it spark-master spark-submit ^
-@REM     --master spark://localhost:7077 ^
-@REM     predict.py
-@REM
+chcp 65001
+set BASE_DIR=%~dp0
+set PREDICT_LOCAL_PATH=/data/predict/predict.csv
+set PREDICT_HDFS_PATH=/data/predict/predict.csv
+
+if not exist %BASE_DIR%data/predict/predict.csv (
+    echo ❌ 找不到要預測的資料: %BASE_DIR%data/predict/predict.csv
+    exit /b 1
+)
+
+docker exec -it namenode hdfs dfs -test -e %PREDICT_HDFS_PATH%
+if errorlevel 1 (
+    echo 📤 上傳預測資料到 HDFS: %PREDICT_HDFS_PATH%
+    docker exec -it namenode hdfs dfs -put /data/predict/predict.csv /data/predict/
+) else (
+    echo ✅ HDFS 上已有預測資料，略過上傳
+)
+
+docker exec -it spark-master spark-submit ^
+    --master spark://spark-master:7077 ^
+    --conf spark.driver.host=spark-master ^
+    --conf spark.driver.bindAddress=0.0.0.0 ^
+    --conf spark.ui.port=4040 ^
+    /app/predict.py
+
+echo fetch data from hdfs haven't been done yet :(
 @REM echo 📥 從 HDFS 複製預測結果...
-@REM docker exec -it namenode hdfs dfs -get / output/
+@REM @REM docker exec -it namenode hdfs dfs -get / output/
 @REM
 @REM echo ✅ 預測結果已下載至 output\predict
-@REM pause
+pause

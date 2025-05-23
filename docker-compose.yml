@@ -13,6 +13,7 @@ services:
       - "9000:9000"
     volumes:
       - ./data/raw:/data/raw
+      - ./data/predict:/data/predict
     networks:
       bigdata-net:
         aliases:
@@ -45,6 +46,7 @@ services:
       - "4040-4050:4040-4050"
     volumes:
       - ./app:/app  # 掛載程式碼
+      - ./data:/app/data/  # 掛載資料
       - ./output:/app/output
     networks:
       bigdata-net:

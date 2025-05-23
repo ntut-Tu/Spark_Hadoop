@@ -4,11 +4,13 @@ from pyspark.sql import SparkSession
 
 from clustering import background_cluster, score_cluster
 from configs.config_loader import load_config
+from configs.enum_headers import CandidateColumns
 from preprocessing import normalization
 from preprocessing.transform import transformers
 from utils import load_data
 from preprocessing.scoring import background_score, mental_score
 from preprocessing.label_mapper import label_mapping
+from utils.column_utils import convert_boolean_to_int
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(BASE_DIR, 'configs/paths.yaml')
@@ -19,19 +21,21 @@ spark.sparkContext.setLogLevel("ERROR")
 
 # Load data
 df = load_data.read_raw_data(spark, config['data']['predict'])
-origin_data = df.select("*")
 
-df = transformers.apply_transformations(df)
+df = transformers.apply_raw_column_renaming(df)
+origin_data = df.select("*")
+df = transformers.apply_to_candidate_transformations(df)
+df = normalization.apply_scaling(df)
+df = convert_boolean_to_int(df)
 df = mental_score.compute_mental_score(df)
 df = background_score.compute_background_score(df)
-df = normalization.apply_scaling(df)
 
 df = score_cluster.predict_with_score_model(df, config)
-df1 = df.select("student_id", "score_cluster")
+df1 = df.select(CandidateColumns.student_id, "score_cluster")
 df = background_cluster.predict_with_background_model(df, config)
-df2 = df.select("student_id","background_cluster")
+df2 = df.select(CandidateColumns.student_id,"background_cluster")
 
-full_output = origin_data.join(df1,on="student_id",how="inner")
-full_output = full_output.join(df2,on="student_id",how="inner")
+full_output = origin_data.join(df1,on=CandidateColumns.student_id,how="inner")
+full_output = full_output.join(df2,on=CandidateColumns.student_id,how="inner")
 full_output = label_mapping(full_output)
 full_output.write.mode("overwrite").parquet(config['data']['predict_output'])

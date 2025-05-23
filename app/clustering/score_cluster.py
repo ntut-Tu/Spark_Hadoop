@@ -18,7 +18,7 @@ def predict_with_score_model(df, config):
     model_path = config['model']['score_cluster']
     model = KMeansModel.load(model_path)
 
-    assembler = VectorAssembler(inputCols=["Total_Score"], outputCol="score_vector")
+    assembler = VectorAssembler(inputCols=get_score_features(), outputCol="score_vector")
     df = assembler.transform(df)
 
     df = model.transform(df)
