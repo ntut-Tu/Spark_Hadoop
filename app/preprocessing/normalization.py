@@ -1,14 +1,12 @@
 from pyspark.ml.feature import VectorAssembler, MinMaxScaler
 from pyspark.ml.functions import vector_to_array
 from pyspark.sql.functions import col
-from config.feature_select import get_need_normalize_features
+from configs.feature_select import get_need_normalize_features
 
 
 def apply_scaling(df):
     input_cols = get_need_normalize_features()
 
-    print(f"Scaling columns: {input_cols}")
-    df.show(5, truncate=False)
     # 組合成 features_vector
     assembler = VectorAssembler(inputCols=input_cols, outputCol="features_vector")
     df = assembler.transform(df)

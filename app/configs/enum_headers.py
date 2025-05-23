@@ -72,6 +72,7 @@ class CandidateColumns(str, Enum):
     b_grade_C = "Grade_Is_C"
     b_grade_D = "Grade_Is_D"
     b_grade_F = "Grade_Is_F"
+    int_grade = "int_Grade"
     study_hours_per_week = "Study_Hours_per_Week"
     b_extracurricular_activities = "Extracurricular_Activities"
     b_internet_access_at_home = "Internet_Access_at_Home"

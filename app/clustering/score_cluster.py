@@ -1,7 +1,7 @@
 from pyspark.ml.clustering import KMeans, KMeansModel
 from pyspark.ml.feature import VectorAssembler
 
-from config.feature_select import get_score_features
+from configs.feature_select import get_score_features
 
 
 def run(df, config):

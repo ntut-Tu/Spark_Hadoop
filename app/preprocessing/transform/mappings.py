@@ -1,4 +1,4 @@
-from config.enum_headers import RenamedColumns, CandidateColumns, RawColumns
+from configs.enum_headers import RenamedColumns, CandidateColumns, RawColumns
 
 RAW_TO_INTERM_MAP = {
     RawColumns.Student_ID: RenamedColumns.student_id,

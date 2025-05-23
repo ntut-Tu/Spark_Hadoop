@@ -2,8 +2,8 @@ import os
 
 from pyspark.sql import SparkSession
 
-from clustering import score_cluster, background_cluster
-from config.config_loader import load_config
+from clustering import background_cluster, score_cluster
+from configs.config_loader import load_config
 from preprocessing import normalization
 from preprocessing.transform import transformers
 from utils import load_data
@@ -11,7 +11,7 @@ from preprocessing.scoring import background_score, mental_score
 from preprocessing.label_mapper import label_mapping
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-CONFIG_PATH = os.path.join(BASE_DIR, 'config/paths.yaml')
+CONFIG_PATH = os.path.join(BASE_DIR, 'configs/paths.yaml')
 config = load_config(CONFIG_PATH, project_base=BASE_DIR, use_hdfs=True)
 
 spark = SparkSession.builder.appName("StudentPreprocessing").getOrCreate()

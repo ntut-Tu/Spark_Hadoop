@@ -1,6 +1,6 @@
-from pyspark.sql.functions import col, lit, min as spark_min, max as spark_max
+from pyspark.sql.functions import col
 
-from config.enum_headers import CandidateColumns
+from configs.enum_headers import CandidateColumns
 
 
 def compute_background_score(df):

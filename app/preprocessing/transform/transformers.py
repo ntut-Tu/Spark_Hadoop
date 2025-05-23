@@ -1,7 +1,6 @@
-from pyspark.sql.functions import when, col
-from pyspark.ml.feature import StringIndexer
+from pyspark.sql.functions import col, when
 
-from config.enum_headers import RawColumns, RenamedColumns, CandidateColumns
+from configs.enum_headers import RawColumns, RenamedColumns, CandidateColumns
 from preprocessing.transform.mappings import RAW_TO_INTERM_MAP, RENAMED_TO_CANDIDATE_MAP
 
 
@@ -44,7 +43,38 @@ def apply_to_candidate_transformations(df):
                        col(RawColumns.Parent_Education_Level.value) == "Master's")
     df = df.withColumn(CandidateColumns.b_parent_edu_phd.value, col(RawColumns.Parent_Education_Level.value) == "PhD")
 
-    # df = _renamed_to_candidate(df)
+    # department → one-hot
+    df = df.withColumn(CandidateColumns.b_dep_math.value,
+                       col(RenamedColumns.department.value) == "Mathematics")
+    df = df.withColumn(CandidateColumns.b_dep_business.value,
+                       col(RenamedColumns.department.value) == "Business")
+    df = df.withColumn(CandidateColumns.b_dep_engineering.value,
+                       col(RenamedColumns.department.value) == "Engineering")
+    df = df.withColumn(CandidateColumns.b_dep_cs.value,
+                       col(RenamedColumns.department.value) == "CS")
+
+    # grade → one-hot
+    df = df.withColumn(CandidateColumns.b_grade_A.value,
+                       col(RenamedColumns.grade.value) == "A")
+    df = df.withColumn(CandidateColumns.b_grade_B.value,
+                       col(RenamedColumns.grade.value) == "B")
+    df = df.withColumn(CandidateColumns.b_grade_C.value,
+                       col(RenamedColumns.grade.value) == "C")
+    df = df.withColumn(CandidateColumns.b_grade_D.value,
+                       col(RenamedColumns.grade.value) == "D")
+    df = df.withColumn(CandidateColumns.b_grade_F.value,
+                       col(RenamedColumns.grade.value) == "F")
+
+    # grade
+    df = df.withColumn(
+        CandidateColumns.int_grade.value,
+        when(col(RenamedColumns.grade.value) == "A", 4)
+        .when(col(RenamedColumns.grade.value) == "B", 3)
+        .when(col(RenamedColumns.grade.value) == "C", 2)
+        .when(col(RenamedColumns.grade.value) == "D", 1)
+        .when(col(RenamedColumns.grade.value) == "F", 0)
+        .otherwise(None)
+    )
     return df
 
 

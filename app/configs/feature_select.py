@@ -1,4 +1,4 @@
-from config.enum_headers import CandidateColumns
+from configs.enum_headers import CandidateColumns
 
 
 def get_score_features():
@@ -12,7 +12,8 @@ def _get_score_features():
         CandidateColumns.midterm_score,
         CandidateColumns.assignments_avg,
         CandidateColumns.quizzes_avg,
-        CandidateColumns.participation_score
+        CandidateColumns.participation_score,
+        CandidateColumns.int_grade
     ]
 
 def get_need_normalize_features():

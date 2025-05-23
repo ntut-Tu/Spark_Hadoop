@@ -1,7 +1,7 @@
 from pyspark.sql.functions import col
 from pyspark.sql.functions import abs
 
-from config.enum_headers import CandidateColumns
+from configs.enum_headers import CandidateColumns
 
 
 def compute_mental_score(df):

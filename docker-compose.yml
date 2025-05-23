@@ -44,7 +44,7 @@ services:
       - "7077:7077"  # Spark Master Communication
       - "4040-4050:4040-4050"
     volumes:
-      - ./:/app  # 掛載程式碼
+      - ./app:/app  # 掛載程式碼
       - ./output:/app/output
     networks:
       bigdata-net:
