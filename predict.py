@@ -4,7 +4,10 @@ from pyspark.sql import SparkSession
 
 from clustering import score_cluster, background_cluster
 from config.config_loader import load_config
-from preprocessing import load_data, transformers, mental_score, background_score, normalization
+from preprocessing import normalization
+from preprocessing.transform import transformers
+from utils import load_data
+from preprocessing.scoring import background_score, mental_score
 from preprocessing.label_mapper import label_mapping
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))

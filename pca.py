@@ -3,7 +3,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from pyspark.sql import SparkSession
-from preprocessing import transformers, mental_score, background_score, normalization
+from preprocessing import normalization
+from preprocessing.transform import transformers
+from preprocessing.scoring import background_score, mental_score
 
 spark = SparkSession.builder.appName("PCA_UMAP").getOrCreate()
 
