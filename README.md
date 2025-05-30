@@ -5,3 +5,4 @@
 3. run (win)init_environment.bat
 4. run (win)run_spark.bat
 5. run (win)start_spark_stream.bat
+6. run (win)run_cli_predict.bat
