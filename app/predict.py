@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 from pyspark.sql import SparkSession
 
@@ -38,4 +39,6 @@ df2 = df.select(CandidateColumns.student_id,"background_cluster")
 full_output = origin_data.join(df1,on=CandidateColumns.student_id,how="inner")
 full_output = full_output.join(df2,on=CandidateColumns.student_id,how="inner")
 full_output = label_mapping(full_output)
-full_output.write.mode("overwrite").parquet(config['data']['predict_output'])
+
+ts = datetime.now().strftime('%Y%m%d_%H%M%S')
+full_output.write.parquet(f"{config['data']['predict_output']}_{ts}")

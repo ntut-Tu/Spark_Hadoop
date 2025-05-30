@@ -5,6 +5,7 @@ data:
   processed: data/processed/final
   full: data/full
   predict_output: data/processed/predict
+  logging: data/logs
 
 model:
   score_cluster: models/score_cluster_model

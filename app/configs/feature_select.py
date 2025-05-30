@@ -4,16 +4,21 @@ from configs.enum_headers import CandidateColumns
 def get_score_features():
     return [col.value for col in _get_score_features()]
 
+# def _get_score_features():
+#     return [
+#         CandidateColumns.final_score,
+#         CandidateColumns.total_score,
+#         CandidateColumns.projects_score,
+#         CandidateColumns.midterm_score,
+#         CandidateColumns.assignments_avg,
+#         CandidateColumns.quizzes_avg,
+#         CandidateColumns.participation_score,
+#         CandidateColumns.int_grade
+#     ]
+
 def _get_score_features():
     return [
-        CandidateColumns.final_score,
         CandidateColumns.total_score,
-        CandidateColumns.projects_score,
-        CandidateColumns.midterm_score,
-        CandidateColumns.assignments_avg,
-        CandidateColumns.quizzes_avg,
-        CandidateColumns.participation_score,
-        CandidateColumns.int_grade
     ]
 
 def get_need_normalize_features():

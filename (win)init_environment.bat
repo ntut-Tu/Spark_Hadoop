@@ -2,6 +2,7 @@
 
 docker exec -it namenode hdfs dfs -mkdir -p /data/predict
 docker exec -it namenode hdfs dfs -mkdir -p /data/raw
+docker exec -it namenode hdfs dfs -mkdir -p /data/logging
 docker exec -it namenode hdfs dfs -mkdir -p /data/interim
 docker exec -it namenode hdfs dfs -mkdir -p /data/processed/final
 docker exec -it namenode hdfs dfs -mkdir -p /data/full
