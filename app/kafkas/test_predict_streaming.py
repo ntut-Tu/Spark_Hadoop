@@ -6,6 +6,7 @@ from pyspark.sql import Row
 from preprocessing.pipeline import run_prediction_pipeline
 from configs.enum_headers import RawColumns
 
+
 @pytest.fixture(scope="session")
 def spark():
     return SparkSession.builder \
@@ -13,9 +14,9 @@ def spark():
         .master("local[*]") \
         .getOrCreate()
 
-def test_pipeline_prediction(spark):
-    # 準備 schema
-    schema = StructType() \
+
+def get_test_schema():
+    return StructType() \
         .add(RawColumns.Student_ID.value, StringType()) \
         .add(RawColumns.Gender.value, StringType()) \
         .add(RawColumns.Extracurricular_Activities.value, StringType()) \
@@ -27,7 +28,10 @@ def test_pipeline_prediction(spark):
         .add(RawColumns.Study_Hours_per_Week.value, DoubleType()) \
         .add(RawColumns.Final_Score.value, DoubleType())
 
-    # 模擬一筆 CLI 輸入的資料
+
+def test_run_prediction_pipeline_should_not_raise(spark):
+    schema = get_test_schema()
+
     data = [Row(**{
         RawColumns.Student_ID.value: "S001",
         RawColumns.Gender.value: "Male",
@@ -43,5 +47,7 @@ def test_pipeline_prediction(spark):
 
     df = spark.createDataFrame(data, schema)
 
-    # 執行預測流程（若錯誤會被 pytest 捕捉）
-    run_prediction_pipeline(df, batch_id=0)
+    try:
+        run_prediction_pipeline(df, batch_id=123)
+    except Exception as e:
+        pytest.fail(f"run_prediction_pipeline raised an exception: {e}")

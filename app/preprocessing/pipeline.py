@@ -19,7 +19,7 @@ ts = datetime.now().strftime('%Y%m%d_%H%M%S')
 
 # === Configure logger ===
 logging.basicConfig(
-    filename=f"pipeline_{ts}.log",
+    filename=f"./logs/pipeline_{ts}.log",
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )

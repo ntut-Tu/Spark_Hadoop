@@ -44,6 +44,7 @@ services:
       - "8080:8080"  # Spark Master UI
       - "7077:7077"  # Spark Master Communication
       - "4040-4050:4040-4050"
+      - "8001:8001"
     volumes:
       - ./app:/app  # 掛載程式碼
       - ./data:/app/data/  # 掛載資料
@@ -102,6 +103,15 @@ services:
       - ./kafka_data:/bitnami/kafka
     networks:
       - bigdata-net
+  frontend:
+    image: frontend-predict:latest
+    container_name: frontend-predict
+    ports:
+      - "3000:3000"
+    networks:
+      - bigdata-net
+    depends_on:
+      - spark-master
 volumes:
   kafka_data:
 networks:

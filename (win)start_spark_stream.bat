@@ -7,6 +7,6 @@ docker exec -it spark-master spark-submit ^
     --conf spark.driver.host=spark-master ^
     --conf spark.driver.bindAddress=0.0.0.0 ^
     --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.4 ^
-    /app/kafka/predict_streaming.py
+    /app/kafkas/predict_streaming.py
 
 pause
