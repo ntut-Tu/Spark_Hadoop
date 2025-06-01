@@ -4,3 +4,5 @@
 /venv
 /venv/
 /kafka_data/data
+/images
+/app/logs
