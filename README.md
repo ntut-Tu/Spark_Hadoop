@@ -32,7 +32,7 @@
 7. **Run `(win)setup_server.bat`**
 
    > * Starts the backend server. You can test the API via Postman at: [http://localhost:8001](http://localhost:8001)
-   > * 🖥 *Keep this window open* — closing it will terminate the server. Restarting it later may be difficult.
+   > * 🖥 *Keep this window open* — Restarting it later may be difficult.
    > * Once the server is running, the frontend should work properly.
    > * The frontend is accessible at: [http://localhost:3000](http://localhost:3000)
 
