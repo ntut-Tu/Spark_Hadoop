@@ -1,15 +1,38 @@
-# Setup Step
-1. install docker
-2. run (docker)setup.bat
-    > Make sure no errors occur during the setup process. In some environments (especially win11), permission issues may arise; in such cases, you may need to install using the image directly instead. 
-3. run (win)init_environment.bat
-4. run (win)run_spark.bat
-5. run (win)start_spark_stream.bat  
-   > This windows need to be kept open for the kafka streaming to run.
-6. run (win)run_test.bat 
-   > To test the installation. If it runs successfully, the installation is complete.
-7. run (win)setup_server.bat
-   > - This will start the server and you can test it with postman at http://localhost:8001  
-   > - This windows also need to be kept open for the server to run, or else it'll be difficult to turn off / restart after.
-   > - Now on your frontend should be able to run normally.
-   > - frontend is available at http://localhost:3000
+
+# Setup Steps
+
+1. **Install Docker**
+   Make sure Docker is installed and running properly on your system.
+   > * We are using a prebuilt image, so we cannot customize startup commands to automatically setup with docker-compose.
+
+2. **Run `(docker)setup.bat`**
+
+   > Ensure the setup completes without any errors.
+   > *Note:* On some systems (especially Windows 11), permission issues may occur. If that happens, you may need to manually install using the image instead.
+
+3. **Run `(win)init_environment.bat`**
+   > Some required HDFS directories must be created manually **from outside the container**.
+   > This is because:
+   > * The **master container** does **not** have HDFS installed or permission to access HDFS.
+   
+4. **Run `(win)run_spark.bat`**
+
+   > This script creates the clustering model for prediction and saves it to HDFS.
+
+5. **Run `(win)start_spark_stream.bat`**
+
+   > This starts the Kafka streaming service.
+   > 🖥 *Keep this window open* — closing it will stop the streaming process.
+
+6. **Run `(win)run_test.bat`**
+
+   > Runs a test to verify the installation.
+   > ✅ If it completes successfully, the system has been set up correctly.
+
+7. **Run `(win)setup_server.bat`**
+
+   > * Starts the backend server. You can test the API via Postman at: [http://localhost:8001](http://localhost:8001)
+   > * 🖥 *Keep this window open* — closing it will terminate the server. Restarting it later may be difficult.
+   > * Once the server is running, the frontend should work properly.
+   > * The frontend is accessible at: [http://localhost:3000](http://localhost:3000)
+
