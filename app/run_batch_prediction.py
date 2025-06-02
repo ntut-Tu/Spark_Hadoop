@@ -21,8 +21,8 @@ spark = SparkSession.builder.appName("BatchPredict").getOrCreate()
 spark.sparkContext.setLogLevel("ERROR")
 
 
-def run_batch_prediction(hdfs_input_path: str, output_base: str):
-    df = load_data.read_raw_data(spark, hdfs_input_path)
+def run_batch_prediction(input_path: str, output_base: str):
+    df = load_data.read_raw_data(spark, input_path)
 
     df = transformers.apply_raw_column_renaming(df)
     origin_data = df.select("*")
