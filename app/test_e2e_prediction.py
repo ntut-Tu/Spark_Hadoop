@@ -23,7 +23,7 @@ class KafkaE2ETester:
         start_time = time.time()
         for message in consumer:
             result = message.value
-            if result.get(RawColumns.Student_ID.value) == student_id:
+            if result.get(RawColumns.Student_ID.value, "") == student_id:
                 return result
             if time.time() - start_time > timeout:
                 break
@@ -31,25 +31,39 @@ class KafkaE2ETester:
         raise TimeoutError(f"❌ 超過 {timeout} 秒未接收到 Student_ID={student_id} 的預測結果")
 
 
-def test_end_to_end_prediction():
+@pytest.mark.parametrize("mode", ["modeA", "modeB"])
+def test_end_to_end_prediction(mode):
     tester = KafkaE2ETester()
 
-    test_record = {
-        RawColumns.Student_ID.value: "E2E_123",
-        RawColumns.Gender.value: "Male",
-        RawColumns.Extracurricular_Activities.value: "Yes",
-        RawColumns.Internet_Access_at_Home.value: "Yes",
-        RawColumns.Family_Income_Level.value: "Medium",
-        RawColumns.Parent_Education_Level.value: "Bachelor's",
-        RawColumns.Department.value: "CS",
-        RawColumns.Grade.value: "A",
-        RawColumns.Study_Hours_per_Week.value: 15.0,
-        RawColumns.Final_Score.value: 90.0
-    }
+    if mode == "modeB":
+        test_record = {
+            RawColumns.Student_ID.value: "E2E_123",
+            RawColumns.Gender.value: "Male",
+            RawColumns.Extracurricular_Activities.value: "Yes",
+            RawColumns.Internet_Access_at_Home.value: "Yes",
+            RawColumns.Family_Income_Level.value: "Medium",
+            RawColumns.Parent_Education_Level.value: "Bachelor's",
+            RawColumns.Department.value: "CS",
+            RawColumns.Grade.value: "A",
+            RawColumns.Study_Hours_per_Week.value: 15.0,
+            RawColumns.Total_Score.value: 90.0
+        }
+        tester.send_test_record(test_record)
+        result = tester.wait_for_result("E2E_123", timeout=20)
+        assert "score_cluster" in result
+        assert "background_cluster" in result
+        assert result[RawColumns.Student_ID.value] == "E2E_123"
 
-    tester.send_test_record(test_record)
-    result = tester.wait_for_result("E2E_123", timeout=20)
-
-    assert "score_cluster" in result
-    assert "background_cluster" in result
-    assert result[RawColumns.Student_ID.value] == "E2E_123"
+    else:  # modeA
+        test_record = {
+            RawColumns.Sleep_Hours_per_Night: 8.0,
+            RawColumns.Attendance_Percent: 92.0,
+            RawColumns.Stress_Level: 5.0,
+            RawColumns.Extracurricular_Activities.value: "No",
+            RawColumns.Internet_Access_at_Home.value: "Yes",
+            RawColumns.Total_Score.value: 90.0
+        }
+        tester.send_test_record(test_record)
+        result = tester.wait_for_result(student_id="", timeout=20)  # 沒有 Student_ID
+        assert "score_cluster" in result
+        assert "mental_cluster" in result

@@ -3,7 +3,7 @@ from datetime import datetime
 
 from pyspark.sql import SparkSession
 
-from clustering import background_cluster, score_cluster
+from clustering import background_cluster, score_cluster, mental_cluster
 from configs.config_loader import load_config
 from configs.enum_headers import CandidateColumns
 from preprocessing import normalization
@@ -34,10 +34,13 @@ df = background_score.compute_background_score(df)
 df = score_cluster.predict_with_score_model(df, config)
 df1 = df.select(CandidateColumns.student_id, "score_cluster")
 df = background_cluster.predict_with_background_model(df, config)
-df2 = df.select(CandidateColumns.student_id,"background_cluster")
+df2 = df.select(CandidateColumns.student_id, "background_cluster")
+df = mental_cluster.predict_with_mental_model(df, config)
+df3 = df.select(CandidateColumns.student_id, "mental_cluster")
 
-full_output = origin_data.join(df1,on=CandidateColumns.student_id,how="inner")
-full_output = full_output.join(df2,on=CandidateColumns.student_id,how="inner")
+full_output = origin_data.join(df1, on=CandidateColumns.student_id, how="inner")
+full_output = full_output.join(df2, on=CandidateColumns.student_id, how="inner")
+full_output = full_output.join(df3, on=CandidateColumns.student_id, how="inner")
 full_output = label_mapping(full_output)
 
 ts = datetime.now().strftime('%Y%m%d_%H%M%S')

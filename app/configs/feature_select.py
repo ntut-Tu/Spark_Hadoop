@@ -4,31 +4,31 @@ from configs.enum_headers import CandidateColumns
 def get_score_features():
     return [col.value for col in _get_score_features()]
 
-# def _get_score_features():
-#     return [
-#         CandidateColumns.final_score,
-#         CandidateColumns.total_score,
-#         CandidateColumns.projects_score,
-#         CandidateColumns.midterm_score,
-#         CandidateColumns.assignments_avg,
-#         CandidateColumns.quizzes_avg,
-#         CandidateColumns.participation_score,
-#         CandidateColumns.int_grade
-#     ]
-
 def _get_score_features():
     return [
+        # CandidateColumns.final_score,
         CandidateColumns.total_score,
+        CandidateColumns.projects_score,
+        # CandidateColumns.midterm_score,
+        # CandidateColumns.assignments_avg,
+        CandidateColumns.quizzes_avg,
+        # CandidateColumns.participation_score,
+        CandidateColumns.int_grade
     ]
+
+# def _get_score_features():
+#     return [
+#         CandidateColumns.total_score,
+#     ]
 
 def get_need_normalize_features():
     return [col.value for col in _get_need_normalize_features()]
 
 def _get_need_normalize_features():
     return [
-        CandidateColumns.study_hours_per_week,
-        CandidateColumns.sleep_hours_per_night,
-        CandidateColumns.attendance_percent,
+        # CandidateColumns.study_hours_per_week,
+        # CandidateColumns.sleep_hours_per_night,
+        # CandidateColumns.attendance_percent,
         CandidateColumns.stress_level,
         CandidateColumns.final_score,
         CandidateColumns.total_score,
@@ -81,7 +81,9 @@ def get_columns_for_background_cluster():
 
 def _get_columns_for_background_cluster():
     return [
-        CandidateColumns.score_background
+        CandidateColumns.score_background,
+        # CandidateColumns.score_personal_background,
+        # CandidateColumns.score_edu_background
     ]
 
 def get_columns_for_mental_cluster():

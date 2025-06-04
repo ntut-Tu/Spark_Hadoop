@@ -1,7 +1,7 @@
 import os
 import logging
 from datetime import datetime
-from clustering import background_cluster, score_cluster
+from clustering import background_cluster, score_cluster, mental_cluster
 from configs.config_loader import load_config
 from configs.enum_headers import CandidateColumns
 from preprocessing import normalization
@@ -10,6 +10,8 @@ from preprocessing.scoring import background_score, mental_score
 from preprocessing.label_mapper import label_mapping
 from utils.column_utils import convert_boolean_to_int, ensure_all_raw_columns
 from utils.load_data import get_unique_output_path
+from pyspark.sql.functions import col
+
 
 # === Set config & timestamp ===
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -28,13 +30,23 @@ logger = logging.getLogger(__name__)
 def run_prediction_pipeline(df, batch_id=None):
     logger.info("🚀 開始執行預測流程")
     try:
-        if df.count() == 0:
-            logger.warning("⚠️ 輸入資料為空，流程中止")
-            return
         df = ensure_all_raw_columns(df)
         df = transformers.apply_raw_column_renaming(df)
         origin_df = df
         df = transformers.apply_to_candidate_transformations(df)
+        null_counts = df.select([
+            (col(c).isNull().cast("int")).alias(c) for c in df.columns
+        ]).groupBy().sum().collect()[0].asDict()
+
+        for col_name, null_count in null_counts.items():
+            if null_count > 0:
+                logger.warning(f"🔍 欄位 {col_name} 有 {null_count} 筆 null 值")
+
+
+        rows = df.collect()
+        for row in rows:
+            logger.warning(f"full data: {row.asDict()}")
+
         df = normalization.apply_scaling(df)
         df = convert_boolean_to_int(df)
         df = mental_score.compute_mental_score(df)
@@ -44,13 +56,16 @@ def run_prediction_pipeline(df, batch_id=None):
         df1 = df.select(CandidateColumns.student_id, "score_cluster")
         df = background_cluster.predict_with_background_model(df, config)
         df2 = df.select(CandidateColumns.student_id, "background_cluster")
+        df = mental_cluster.predict_with_mental_model(df, config)
+        df3 = df.select(CandidateColumns.student_id, "mental_cluster")
 
         full_output = origin_df.join(df1, on=CandidateColumns.student_id, how="inner")
         full_output = full_output.join(df2, on=CandidateColumns.student_id, how="inner")
+        full_output = full_output.join(df3, on=CandidateColumns.student_id, how="inner")
         full_output = label_mapping(full_output)
 
         full_output.select(
-            CandidateColumns.student_id, "score_cluster", "background_cluster"
+            CandidateColumns.student_id, "score_cluster", "background_cluster", "mental_cluster",
         ).show(truncate=False)
 
         output_path = get_unique_output_path(config['data']['predict_output'])

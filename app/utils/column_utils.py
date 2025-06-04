@@ -1,4 +1,4 @@
-from pyspark.sql.functions import col
+from pyspark.sql.functions import when, col
 from pyspark.sql.types import BooleanType
 from pyspark.sql.functions import lit
 from pyspark.sql.types import StringType, DoubleType, IntegerType
@@ -52,6 +52,8 @@ def ensure_all_raw_columns(df):
     for col_name, default_col in defaults.items():
         if col_name not in df.columns:
             df = df.withColumn(col_name, default_col)
+        else:
+            df = df.withColumn(col_name, when(col(col_name).isNull(), default_col).otherwise(col(col_name)))
     return df
 
 

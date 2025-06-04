@@ -118,7 +118,9 @@ export default function BatchPredictForm() {
                     <TableHead>
                       <TableRow>
                         <TableCell>#</TableCell>
+                        <TableCell>學號</TableCell>
                         <TableCell>背景分群</TableCell>
+                        <TableCell>心理分群</TableCell>
                         <TableCell>成績分群</TableCell>
                       </TableRow>
                     </TableHead>
@@ -128,6 +130,7 @@ export default function BatchPredictForm() {
                             <TableCell>{index + 1}</TableCell>
                             <TableCell>{row.Student_ID}</TableCell>
                             <TableCell>{row.background_cluster_label}</TableCell>
+                            <TableCell>{row.mental_cluster_label}</TableCell>
                             <TableCell>{row.score_cluster_label}</TableCell>
                           </TableRow>
                       ))}

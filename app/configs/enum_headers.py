@@ -89,3 +89,5 @@ class CandidateColumns(str, Enum):
     # after processing
     score_mental = "mental_score"
     score_background = "background_score"
+    score_personal_background = "personal_background_score"
+    score_edu_background = "edu_background_score"

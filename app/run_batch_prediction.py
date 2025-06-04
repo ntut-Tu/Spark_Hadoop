@@ -9,7 +9,7 @@ from preprocessing import normalization
 from preprocessing.transform import transformers
 from preprocessing.label_mapper import label_mapping
 from preprocessing.scoring import background_score, mental_score
-from clustering import score_cluster, background_cluster
+from clustering import score_cluster, background_cluster, mental_cluster
 from utils.column_utils import convert_boolean_to_int
 
 
@@ -36,9 +36,12 @@ def run_batch_prediction(input_path: str, output_base: str):
     df1 = df.select(CandidateColumns.student_id, "score_cluster")
     df = background_cluster.predict_with_background_model(df, config)
     df2 = df.select(CandidateColumns.student_id, "background_cluster")
+    df = mental_cluster.predict_with_mental_model(df, config)
+    df3 = df.select(CandidateColumns.student_id, "mental_cluster")
 
     full_output = origin_data.join(df1, on=CandidateColumns.student_id, how="inner")
     full_output = full_output.join(df2, on=CandidateColumns.student_id, how="inner")
+    full_output = full_output.join(df3, on=CandidateColumns.student_id, how="inner")
     full_output = label_mapping(full_output)
 
     full_output.write.mode("overwrite").parquet(output_base)

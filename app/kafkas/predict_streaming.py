@@ -1,8 +1,9 @@
+import json
 import os
 from datetime import datetime
 
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import from_json, col
+from pyspark.sql.functions import from_json, col, udf
 from pyspark.sql.types import StructType, StringType, DoubleType
 
 from configs.config_loader import load_config
@@ -34,13 +35,19 @@ class KafkaPredictor:
             .add(RawColumns.Department.value, StringType()) \
             .add(RawColumns.Grade.value, StringType()) \
             .add(RawColumns.Study_Hours_per_Week.value, DoubleType()) \
-            .add(RawColumns.Final_Score.value, DoubleType())
+            .add(RawColumns.Total_Score.value, DoubleType())\
+            .add(RawColumns.Projects_Score, DoubleType()) \
+            .add(RawColumns.Quizzes_Avg, DoubleType())\
+            .add(RawColumns.Sleep_Hours_per_Night, DoubleType()) \
+            .add(RawColumns.Attendance_Percent, DoubleType()) \
+            .add(RawColumns.Stress_Level, DoubleType()) \
+
 
     def _safe_run_prediction(self, df, batch_id):
         try:
             run_prediction_pipeline(df, batch_id)
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"[Error] prediction failed: {e}")
 
     def start(self):
         kafka_df = self.spark.readStream \
@@ -64,5 +71,5 @@ if __name__ == "__main__":
     try:
         predictor = KafkaPredictor()
         predictor.start()
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"[Fatal Error] {e}")

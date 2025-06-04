@@ -10,7 +10,8 @@ def compute_mental_score(df):
         _get_sleep_score(col(CandidateColumns.sleep_hours_per_night)) +
         _get_attendance_score(col(CandidateColumns.attendance_percent)) +
         _get_extracurricular_activities_score(col(CandidateColumns.b_extracurricular_activities)) +
-        _get_internet_access_score(col(CandidateColumns.b_internet_access_at_home))
+        _get_internet_access_score(col(CandidateColumns.b_internet_access_at_home))+
+        col(CandidateColumns.stress_level)/10*0.4
     )
 
 
