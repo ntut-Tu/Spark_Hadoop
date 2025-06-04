@@ -14,7 +14,7 @@ def run(df, config):
     model.write().overwrite().save(config['model']['mental_cluster'])
     return model.transform(df)
 
-def predict_with_background_model(df, config):
+def predict_with_mental_model(df, config):
     model_path = config['model']['mental_cluster']
     model = KMeansModel.load(model_path)
 
