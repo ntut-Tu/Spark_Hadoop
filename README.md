@@ -24,10 +24,11 @@
    > This starts the Kafka streaming service.
    > 🖥 *Keep this window open* — closing it will stop the streaming process.
 
-6. **Run `(win)run_test.bat`**
+6. **!!!Do not run !!!`(win)run_test.bat`**
 
-   > Runs a test to verify the installation.
-   > ✅ If it completes successfully, the system has been set up correctly.
+   > The CLI is deprecated as it won’t be part of the final version. Since the integration tests rely on it, this script is currently non-functional.
+   
+
 
 7. **Run `(win)setup_server.bat`**
 

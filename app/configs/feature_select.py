@@ -36,7 +36,8 @@ def _get_need_normalize_features():
         CandidateColumns.midterm_score,
         CandidateColumns.assignments_avg,
         CandidateColumns.quizzes_avg,
-        CandidateColumns.participation_score
+        CandidateColumns.participation_score,
+        CandidateColumns.int_grade
     ]
 
 def get_background_features_for_scoring():
