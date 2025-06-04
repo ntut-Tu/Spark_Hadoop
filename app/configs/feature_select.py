@@ -83,3 +83,11 @@ def _get_columns_for_background_cluster():
     return [
         CandidateColumns.score_background
     ]
+
+def get_columns_for_mental_cluster():
+    return [col.value for col in _get_columns_for_mental_cluster()]
+    
+def _get_columns_for_mental_cluster():
+    return [
+        CandidateColumns.score_mental
+    ]
