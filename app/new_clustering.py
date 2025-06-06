@@ -7,10 +7,11 @@ from configs.enum_headers import CandidateColumns
 from preprocessing import normalization
 from preprocessing.transform import transformers
 from utils import load_data
-from preprocessing.scoring import background_score, mental_score
+from preprocessing.scoring import background_score, mental_score, score_score
 from clustering import background_cluster, mental_cluster, score_cluster, cluster_analysis, cluster_analysis2
 from preprocessing.label_mapper import label_mapping
 from utils.column_utils import convert_boolean_to_int
+
 
 def _evaluate_and_fix(df):
     df = mental_score.new_compute_mental_score(df, config)
@@ -44,7 +45,6 @@ def _evaluate_and_fix(df):
     full_output.write.mode("overwrite").parquet(config['data']['full'])
 
 
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(BASE_DIR, 'configs/paths.yaml')
 config = load_config(CONFIG_PATH, project_base=BASE_DIR, use_hdfs=True)
@@ -65,6 +65,7 @@ df = normalization.apply_scaling(df)
 df = convert_boolean_to_int(df)
 df = mental_score.new_compute_mental_score_v1(df)
 df = background_score.new_compute_background_score(df)
+df = score_score.compute_score_score(df)
 
 # Save interim data
 print("✅ 正在寫入 interim 資料至 HDFS...")
@@ -88,10 +89,10 @@ show_silhouette_score(df, "mental_cluster", "mental")
 
 # Save processed data
 print("✅ 正在寫入 processed 資料至 HDFS...")
-#df.write.mode("overwrite").parquet(configs['data']['processed'])
-full_output = origin_data.join(df1,on=CandidateColumns.student_id,how="inner")
-full_output = full_output.join(df2,on=CandidateColumns.student_id,how="inner")
-full_output = full_output.join(df3,on=CandidateColumns.student_id,how="inner")
+# df.write.mode("overwrite").parquet(configs['data']['processed'])
+full_output = origin_data.join(df1, on=CandidateColumns.student_id, how="inner")
+full_output = full_output.join(df2, on=CandidateColumns.student_id, how="inner")
+full_output = full_output.join(df3, on=CandidateColumns.student_id, how="inner")
 full_output = label_mapping(full_output)
 full_output.write.mode("overwrite").parquet(config['data']['full'])
 

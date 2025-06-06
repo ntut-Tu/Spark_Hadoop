@@ -7,9 +7,11 @@ import matplotlib.cm as cm
 from pyspark.sql import SparkSession
 
 from configs.enum_headers import CandidateColumns
-from configs.feature_select import get_feature_list_for_clustering, get_testing_score_features, get_score_features, \
-    get_mental_features_for_scoring, get_background_features_for_scoring
+from configs.feature_select import get_feature_list_for_clustering, get_testing_score_features, \
+    get_default_score_features, \
+    get_mental_features_for_scoring, get_background_features_for_scoring, get_score_features
 from preprocessing import normalization
+from preprocessing.scoring.scoring_helper import apply_scoring
 from preprocessing.transform import transformers
 from preprocessing.scoring import background_score, mental_score
 from utils.column_utils import convert_boolean_to_int
@@ -36,11 +38,13 @@ def _target_selector(target, for_what):
         raise ValueError(f"Unknown target: {target}")
 
 def _get_score_features():
-    input_type = "default"
+    input_type = "new"
     if input_type == "default":
-        return get_score_features()
+        return get_default_score_features()
     elif input_type == "test":
         return get_testing_score_features()
+    elif input_type == "new":
+        return get_score_features()
 
 
 def _clustering_feature_getter(target1, target2):
@@ -71,8 +75,7 @@ def _data_frame_fetcher():
     df = transformers.apply_to_candidate_transformations(df)
     df = normalization.apply_scaling(df)
     df = convert_boolean_to_int(df)
-    df = mental_score.compute_mental_score(df)
-    df = background_score.compute_background_score(df)
+    df = apply_scoring(df)
     return df
 
 

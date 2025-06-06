@@ -7,6 +7,7 @@ from clustering import background_cluster, score_cluster, mental_cluster
 from configs.config_loader import load_config
 from configs.enum_headers import CandidateColumns
 from preprocessing import normalization
+from preprocessing.scoring.scoring_helper import apply_scoring
 from preprocessing.transform import transformers
 from utils import load_data
 from preprocessing.scoring import background_score, mental_score
@@ -28,8 +29,7 @@ origin_data = df.select("*")
 df = transformers.apply_to_candidate_transformations(df)
 df = normalization.apply_scaling(df)
 df = convert_boolean_to_int(df)
-df = mental_score.compute_mental_score(df)
-df = background_score.compute_background_score(df)
+df = apply_scoring(df)
 
 df = score_cluster.predict_with_score_model(df, config)
 df1 = df.select(CandidateColumns.student_id, "score_cluster")

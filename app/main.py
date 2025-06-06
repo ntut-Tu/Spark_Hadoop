@@ -5,9 +5,10 @@ from clustering.evaluate_tools.silhouette_score import show_silhouette_score
 from configs.config_loader import load_config
 from configs.enum_headers import CandidateColumns
 from preprocessing import normalization
+from preprocessing.scoring.scoring_helper import apply_scoring
 from preprocessing.transform import transformers
 from utils import load_data
-from preprocessing.scoring import background_score, mental_score
+from preprocessing.scoring import background_score, mental_score, score_score
 from clustering import background_cluster, mental_cluster, score_cluster, cluster_analysis, cluster_analysis2
 from preprocessing.label_mapper import label_mapping
 from utils.column_utils import convert_boolean_to_int
@@ -30,9 +31,7 @@ origin_data = df.select("*")
 df = transformers.apply_to_candidate_transformations(df)
 df = normalization.apply_scaling(df)
 df = convert_boolean_to_int(df)
-df = mental_score.compute_mental_score(df)
-df = background_score.compute_background_score(df)
-
+df = apply_scoring(df)
 # Save interim data
 print("✅ 正在寫入 interim 資料至 HDFS...")
 df.write.mode("overwrite").parquet(config['data']['interim'])
@@ -55,9 +54,9 @@ show_silhouette_score(df, "mental_cluster", "mental")
 
 # Save processed data
 print("✅ 正在寫入 processed 資料至 HDFS...")
-#df.write.mode("overwrite").parquet(configs['data']['processed'])
-full_output = origin_data.join(df1,on=CandidateColumns.student_id,how="inner")
-full_output = full_output.join(df2,on=CandidateColumns.student_id,how="inner")
-full_output = full_output.join(df3,on=CandidateColumns.student_id,how="inner")
+# df.write.mode("overwrite").parquet(configs['data']['processed'])
+full_output = origin_data.join(df1, on=CandidateColumns.student_id, how="inner")
+full_output = full_output.join(df2, on=CandidateColumns.student_id, how="inner")
+full_output = full_output.join(df3, on=CandidateColumns.student_id, how="inner")
 full_output = label_mapping(full_output)
 full_output.write.mode("overwrite").parquet(config['data']['full'])

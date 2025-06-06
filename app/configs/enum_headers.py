@@ -91,3 +91,4 @@ class CandidateColumns(str, Enum):
     score_background = "background_score"
     score_personal_background = "personal_background_score"
     score_edu_background = "edu_background_score"
+    final_performance_score = "final_performance_score" # from https://www.kaggle.com/code/aishawaziry/analysis-student-performance/notebook#Feature-engineering

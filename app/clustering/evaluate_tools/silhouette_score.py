@@ -1,7 +1,7 @@
 from pyspark.ml.evaluation import ClusteringEvaluator
 from pyspark.ml.feature import VectorAssembler
 
-from configs.feature_select import get_mental_features_for_scoring, get_score_features, \
+from configs.feature_select import get_mental_features_for_scoring, get_default_score_features, \
     get_background_features_for_scoring
 
 
@@ -12,7 +12,7 @@ def _features_assembler(df, feature_type):
         return assembler.transform(df)
     elif feature_type == "score":
         print("score clustering:")
-        assembler = VectorAssembler(inputCols=get_score_features(), outputCol="sil_score_features")
+        assembler = VectorAssembler(inputCols=get_default_score_features(), outputCol="sil_score_features")
         return assembler.transform(df)
     elif feature_type == "mental":
         print("mental clustering:")
