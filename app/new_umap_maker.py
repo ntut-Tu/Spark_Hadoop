@@ -1,3 +1,5 @@
+import os
+
 import umap.umap_ as umap
 import matplotlib.pyplot as plt
 import numpy as np
@@ -29,9 +31,16 @@ def _target_selector(target, for_what):
         if for_what == "cluster":
             return "score_cluster"
         elif for_what == "feature":
-            return get_testing_score_features()
+            return _get_score_features()
     else:
         raise ValueError(f"Unknown target: {target}")
+
+def _get_score_features():
+    input_type = "default"
+    if input_type == "default":
+        return get_score_features()
+    elif input_type == "test":
+        return get_testing_score_features()
 
 
 def _clustering_feature_getter(target1, target2):
@@ -39,17 +48,17 @@ def _clustering_feature_getter(target1, target2):
         if target1 == "background":
             return get_mental_features_for_scoring() + get_background_features_for_scoring()
         elif target1 == "score":
-            return get_testing_score_features() + get_mental_features_for_scoring()
+            return _get_score_features() + get_mental_features_for_scoring()
     elif target2 == "background":
         if target1 == "mental":
             return get_mental_features_for_scoring() + get_background_features_for_scoring()
         elif target1 == "score":
-            return get_background_features_for_scoring() + get_testing_score_features()
+            return get_background_features_for_scoring() + _get_score_features()
     elif target2 == "score":
         if target1 == "mental":
-            return get_testing_score_features() + get_mental_features_for_scoring()
+            return _get_score_features() + get_mental_features_for_scoring()
         elif target1 == "background":
-            return get_testing_score_features() + get_background_features_for_scoring()
+            return _get_score_features() + get_background_features_for_scoring()
 
 
 def _data_frame_fetcher():
@@ -129,7 +138,9 @@ def create_umap(target1, target2, version):
 
     # 輸出
     plt.tight_layout()
-    plt.savefig(f'umap_output/umap_dual_view_{target1}_{target2}_{version}.png', dpi=300)
+    if not os.path.exists(f'umap_output/{version}'):
+        os.mkdir(f'umap_output/{version}')
+    plt.savefig(f'umap_output/{version}/umap_dual_view_{target1}_{target2}.png', dpi=300)
     plt.close()
 
 

@@ -47,11 +47,11 @@ def new_compute_mental_score_v1(df):
     df1 = _apply_custom_scaling(df1, CandidateColumns.stress_level)
     return df1.withColumn(
         CandidateColumns.score_mental,
-        col(CandidateColumns.sleep_hours_per_night) +
-        col(CandidateColumns.attendance_percent) +
-        col(CandidateColumns.b_extracurricular_activities) +
-        col(CandidateColumns.b_internet_access_at_home) +
-        col(CandidateColumns.stress_level)
+        col(CandidateColumns.sleep_hours_per_night)*0.3 +
+        col(CandidateColumns.attendance_percent)*0.3 +
+        col(CandidateColumns.b_extracurricular_activities)*0.05 +
+        col(CandidateColumns.b_internet_access_at_home)*0.05 +
+        col(CandidateColumns.stress_level)*0.35
     )
 
 def new_compute_mental_score(df,config):

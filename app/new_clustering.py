@@ -12,6 +12,39 @@ from clustering import background_cluster, mental_cluster, score_cluster, cluste
 from preprocessing.label_mapper import label_mapping
 from utils.column_utils import convert_boolean_to_int
 
+def _evaluate_and_fix(df):
+    df = mental_score.new_compute_mental_score(df, config)
+
+    print("✅ 正在寫入 interim 資料至 HDFS...")
+    df.write.mode("overwrite").parquet(config['data']['interim'])
+
+    # Clustering
+    df = score_cluster.run(df, config)
+    df1 = df.select(CandidateColumns.student_id, "score_cluster")
+    df = background_cluster.run(df, config)
+    df2 = df.select(CandidateColumns.student_id, "background_cluster")
+    df = mental_cluster.run(df, config)
+    df3 = df.select(CandidateColumns.student_id, "mental_cluster")
+
+    cluster_analysis.cross_tab(df1, df2, config)
+    cluster_analysis2.cross_tab(df1, df3, config)
+
+    # Show silhouette scores
+    show_silhouette_score(df, "score_cluster", "score")
+    show_silhouette_score(df, "background_cluster", "background")
+    show_silhouette_score(df, "mental_cluster", "mental")
+
+    # Save processed data
+    print("✅ 正在寫入 processed 資料至 HDFS...")
+    # df.write.mode("overwrite").parquet(configs['data']['processed'])
+    full_output = origin_data.join(df1, on=CandidateColumns.student_id, how="inner")
+    full_output = full_output.join(df2, on=CandidateColumns.student_id, how="inner")
+    full_output = full_output.join(df3, on=CandidateColumns.student_id, how="inner")
+    full_output = label_mapping(full_output)
+    full_output.write.mode("overwrite").parquet(config['data']['full'])
+
+
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(BASE_DIR, 'configs/paths.yaml')
 config = load_config(CONFIG_PATH, project_base=BASE_DIR, use_hdfs=True)
@@ -62,34 +95,4 @@ full_output = full_output.join(df3,on=CandidateColumns.student_id,how="inner")
 full_output = label_mapping(full_output)
 full_output.write.mode("overwrite").parquet(config['data']['full'])
 
-#return0
-
-df = mental_score.new_compute_mental_score(df,config)
-
-print("✅ 正在寫入 interim 資料至 HDFS...")
-df.write.mode("overwrite").parquet(config['data']['interim'])
-
-# Clustering
-df = score_cluster.run(df, config)
-df1 = df.select(CandidateColumns.student_id, "score_cluster")
-df = background_cluster.run(df, config)
-df2 = df.select(CandidateColumns.student_id, "background_cluster")
-df = mental_cluster.run(df, config)
-df3 = df.select(CandidateColumns.student_id, "mental_cluster")
-
-cluster_analysis.cross_tab(df1, df2, config)
-cluster_analysis2.cross_tab(df1, df3, config)
-
-# Show silhouette scores
-show_silhouette_score(df, "score_cluster", "score")
-show_silhouette_score(df, "background_cluster", "background")
-show_silhouette_score(df, "mental_cluster", "mental")
-
-# Save processed data
-print("✅ 正在寫入 processed 資料至 HDFS...")
-#df.write.mode("overwrite").parquet(configs['data']['processed'])
-full_output = origin_data.join(df1,on=CandidateColumns.student_id,how="inner")
-full_output = full_output.join(df2,on=CandidateColumns.student_id,how="inner")
-full_output = full_output.join(df3,on=CandidateColumns.student_id,how="inner")
-full_output = label_mapping(full_output)
-full_output.write.mode("overwrite").parquet(config['data']['full'])
+# _evaluate_and_fix(df)
