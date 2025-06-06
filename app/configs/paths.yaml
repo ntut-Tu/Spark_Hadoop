@@ -11,3 +11,9 @@ model:
   score_cluster: models/score_cluster_model
   background_cluster: models/background_cluster_model
   mental_cluster: models/mental_cluster_model
+
+testing:
+  score_cluster: testing/models/score_cluster_model
+  background_cluster: testing/models/background_cluster_model
+  mental_cluster: testing/models/mental_cluster_model
+  full: testing/data/full

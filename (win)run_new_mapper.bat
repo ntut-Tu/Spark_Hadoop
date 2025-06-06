@@ -12,7 +12,7 @@ if not exist %DATA_PATH%\*.parquet (
 echo 🚀 開始執行 UMAP 繪圖...
 docker exec -it spark-master spark-submit ^
  --master spark://spark-master:7077 ^
- map_test.py ^
+ new_umap_maker.py ^
  --input %DATA_PATH% ^
  --output_dir /app/output
 

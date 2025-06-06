@@ -4,7 +4,7 @@ from configs.enum_headers import CandidateColumns
 def get_score_features():
     return [col.value for col in _get_score_features()]
 
-def _get_score_features():
+def _get_testing_score_features():
     return [
         # CandidateColumns.final_score,
         CandidateColumns.total_score,
@@ -16,10 +16,13 @@ def _get_score_features():
         CandidateColumns.int_grade
     ]
 
-# def _get_score_features():
-#     return [
-#         CandidateColumns.total_score,
-#     ]
+def get_testing_score_features():
+    return [col.value for col in _get_testing_score_features()]
+
+def _get_score_features():
+    return [
+        CandidateColumns.total_score,
+    ]
 
 def get_need_normalize_features():
     return [col.value for col in _get_need_normalize_features()]

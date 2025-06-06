@@ -5,7 +5,11 @@ from configs.feature_select import get_columns_for_mental_cluster
 
 
 def run(df, config):
-    input_cols = ["mental_score"] + get_columns_for_mental_cluster()
+    print(f"Running mental clustering!")
+    for col_name in ["mental_vector", "mental_cluster"]:
+        if col_name in df.columns:
+            df = df.drop(col_name)
+    input_cols = get_columns_for_mental_cluster()
     assembler = VectorAssembler(inputCols=input_cols, outputCol="mental_vector")
     df = assembler.transform(df)
 

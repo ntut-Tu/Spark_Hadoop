@@ -30,10 +30,42 @@ origin_data = df.select("*")
 df = transformers.apply_to_candidate_transformations(df)
 df = normalization.apply_scaling(df)
 df = convert_boolean_to_int(df)
-df = mental_score.compute_mental_score(df)
-df = background_score.compute_background_score(df)
+df = mental_score.new_compute_mental_score_v1(df)
+df = background_score.new_compute_background_score(df)
 
 # Save interim data
+print("✅ 正在寫入 interim 資料至 HDFS...")
+df.write.mode("overwrite").parquet(config['data']['interim'])
+
+# Clustering
+df = score_cluster.run(df, config)
+df1 = df.select(CandidateColumns.student_id, "score_cluster")
+df = background_cluster.run(df, config)
+df2 = df.select(CandidateColumns.student_id, "background_cluster")
+df = mental_cluster.run(df, config)
+df3 = df.select(CandidateColumns.student_id, "mental_cluster")
+
+cluster_analysis.cross_tab(df1, df2, config)
+cluster_analysis2.cross_tab(df1, df3, config)
+
+# Show silhouette scores
+show_silhouette_score(df, "score_cluster", "score")
+show_silhouette_score(df, "background_cluster", "background")
+show_silhouette_score(df, "mental_cluster", "mental")
+
+# Save processed data
+print("✅ 正在寫入 processed 資料至 HDFS...")
+#df.write.mode("overwrite").parquet(configs['data']['processed'])
+full_output = origin_data.join(df1,on=CandidateColumns.student_id,how="inner")
+full_output = full_output.join(df2,on=CandidateColumns.student_id,how="inner")
+full_output = full_output.join(df3,on=CandidateColumns.student_id,how="inner")
+full_output = label_mapping(full_output)
+full_output.write.mode("overwrite").parquet(config['data']['full'])
+
+#return0
+
+df = mental_score.new_compute_mental_score(df,config)
+
 print("✅ 正在寫入 interim 資料至 HDFS...")
 df.write.mode("overwrite").parquet(config['data']['interim'])
 
