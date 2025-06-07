@@ -32,6 +32,13 @@ def apply_to_candidate_transformations(df):
     df = df.withColumn(CandidateColumns.b_family_inc_medium.value,
                        col(RawColumns.Family_Income_Level.value) == "Medium")
     df = df.withColumn(CandidateColumns.b_family_inc_low.value, col(RawColumns.Family_Income_Level.value) == "Low")
+    df = df.withColumn(
+        CandidateColumns.int_family_inc.value,
+        when(col(CandidateColumns.b_family_inc_high.value) == True, 2)
+        .when(col(CandidateColumns.b_family_inc_medium.value) == True, 1)
+        .when(col(CandidateColumns.b_family_inc_low.value) == True, 0)
+        .otherwise(0)
+    )
 
     # Parent Education Level → one-hot
     df = df.withColumn(CandidateColumns.b_parent_edu_none.value, col(RawColumns.Parent_Education_Level.value) == "None")
@@ -42,6 +49,15 @@ def apply_to_candidate_transformations(df):
     df = df.withColumn(CandidateColumns.b_parent_edu_master.value,
                        col(RawColumns.Parent_Education_Level.value) == "Master's")
     df = df.withColumn(CandidateColumns.b_parent_edu_phd.value, col(RawColumns.Parent_Education_Level.value) == "PhD")
+    df = df.withColumn(
+        CandidateColumns.int_parent_edu.value,
+        when(col(CandidateColumns.b_parent_edu_none.value) == True, 0)
+        .when(col(CandidateColumns.b_parent_edu_high_school.value) == True, 1)
+        .when(col(CandidateColumns.b_parent_edu_bachelor.value) == True, 2)
+        .when(col(CandidateColumns.b_parent_edu_master.value) == True, 3)
+        .when(col(CandidateColumns.b_parent_edu_phd.value) == True, 4)
+        .otherwise(None)
+    )
 
     # department → one-hot
     df = df.withColumn(CandidateColumns.b_dep_math.value,

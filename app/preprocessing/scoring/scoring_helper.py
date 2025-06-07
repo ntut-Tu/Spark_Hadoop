@@ -1,15 +1,17 @@
-from preprocessing.scoring.background_score import compute_background_score
-from preprocessing.scoring.mental_score import new_compute_mental_score, compute_mental_score
-from preprocessing.scoring.score_score import compute_score_score
+from configs.enum_headers import CandidateColumns
+from preprocessing.scoring.background_score import compute_background_score_ml_v1, compute_background_score_ml_v2
+from preprocessing.scoring.mental_score import compute_mental_score_ml_v1, compute_mental_score_ml_v2
+from preprocessing.scoring.score_score import compute_score_score_ml, compute_score_score, compute_score_score_v1
 
 
 def apply_scoring(df):
-    # Apply mental score computation
-    df = compute_mental_score(df)
-
     # Apply score score computation
-    df = compute_score_score(df)
+    df = compute_score_score_v1(df)
+
+    # df.select(CandidateColumns.final_performance_score).describe().show()
+    # Apply mental score computation
+    df = compute_mental_score_ml_v2(df)
 
     # Apply background score computation
-    df = compute_background_score(df)
+    df = compute_background_score_ml_v1(df)
     return df

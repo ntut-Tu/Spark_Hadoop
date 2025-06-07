@@ -5,24 +5,23 @@ from pyspark.sql.types import StringType
 
 def get_background_cluster_mappings():
     return [
-        "growing_opportunities",
-        "abundant_opportunities",
-        "expanding_opportunities"
+        "growing_opportunities",  #0
+        "abundant_opportunities", #1
+        "expanding_opportunities" #2
     ]
 
 def get_score_cluster_mappings():
     return [
-        "low_score",
-        "high_score",
-        "normal_score",
-
+        "low_score",   #0
+        "high_score",  #1
+        "normal_score",#2
     ]
 
 def get_mental_cluster_mappings():
     return [
-        "high_stress",
-        "normal_stress",
-        "low_stress"
+        "high_stress",  #0
+        "normal_stress",#1
+        "low_stress"    #2
     ]
 
 

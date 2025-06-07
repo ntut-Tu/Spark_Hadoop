@@ -60,7 +60,7 @@ def _get_need_normalize_features():
     ]
 
 def get_background_features_for_scoring():
-    return [col.value for col in _get_background_features_for_scoring()]
+    return [col.value for col in _get_background_features_for_scoring_v2()]
 
 def _get_background_features_for_scoring():
     return [
@@ -76,15 +76,23 @@ def _get_background_features_for_scoring():
         CandidateColumns.b_extracurricular_activities,
     ]
 
+def _get_background_features_for_scoring_v2():
+    return [
+        CandidateColumns.study_hours_per_week,
+        CandidateColumns.b_extracurricular_activities,
+        CandidateColumns.int_parent_edu,
+        CandidateColumns.int_family_inc,
+    ]
+
 def get_mental_features_for_scoring():
     return [col.value for col in _get_mental_features_for_scoring()]
 
 def _get_mental_features_for_scoring():
     return [
         CandidateColumns.sleep_hours_per_night,
-        CandidateColumns.attendance_percent,
+        # CandidateColumns.attendance_percent,
         CandidateColumns.stress_level,
-        CandidateColumns.b_extracurricular_activities,
+        # CandidateColumns.b_extracurricular_activities,
         CandidateColumns.b_internet_access_at_home
     ]
 

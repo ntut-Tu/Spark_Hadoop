@@ -6,7 +6,10 @@ from configs.feature_select import get_columns_for_background_cluster
 
 
 def run(df, config):
-    input_cols = ["background_score"] + get_columns_for_background_cluster()
+    for col_name in ["background_vector", "background_cluster"]:
+        if col_name in df.columns:
+            df = df.drop(col_name)
+    input_cols = get_columns_for_background_cluster()
     assembler = VectorAssembler(inputCols=input_cols, outputCol="background_vector")
     df = assembler.transform(df)
     kmeans = KMeans(k=3, featuresCol="background_vector", predictionCol="background_cluster", seed=123, initMode="k-means||")

@@ -7,13 +7,12 @@ import matplotlib.cm as cm
 from pyspark.sql import SparkSession
 
 from configs.enum_headers import CandidateColumns
-from configs.feature_select import get_feature_list_for_clustering, get_testing_score_features, \
+from configs.feature_select import get_testing_score_features, \
     get_default_score_features, \
     get_mental_features_for_scoring, get_background_features_for_scoring, get_score_features
 from preprocessing import normalization
 from preprocessing.scoring.scoring_helper import apply_scoring
 from preprocessing.transform import transformers
-from preprocessing.scoring import background_score, mental_score
 from utils.column_utils import convert_boolean_to_int
 from utils.logger import short_id
 
@@ -47,7 +46,9 @@ def _get_score_features():
         return get_score_features()
 
 
-def _clustering_feature_getter(target1, target2):
+def _clustering_feature_getter(target1, target2, spec):
+    if spec:
+        return _get_score_features()
     if target2 == "mental":
         if target1 == "background":
             return get_mental_features_for_scoring() + get_background_features_for_scoring()
@@ -80,11 +81,11 @@ def _data_frame_fetcher():
 
 
 # 建立 Spark Session
-def create_umap(target1, target2, version):
+def create_umap(target1, target2, version, spec = False):
     df = _data_frame_fetcher()
 
     # 特徵欄位（不包含 student_id）
-    feature_cols = [col for col in _clustering_feature_getter(target1, target2) if col != CandidateColumns.student_id]
+    feature_cols = [col for col in _clustering_feature_getter(target1, target2, spec) if col != CandidateColumns.student_id]
 
     # 取出需要欄位
     scaled_selected = df.select(*feature_cols, _target_selector(target1, "cluster"),
@@ -143,16 +144,21 @@ def create_umap(target1, target2, version):
     plt.tight_layout()
     if not os.path.exists(f'umap_output/{version}'):
         os.mkdir(f'umap_output/{version}')
-    plt.savefig(f'umap_output/{version}/umap_dual_view_{target1}_{target2}.png', dpi=300)
+    if spec:
+        plt.savefig(f'umap_output/{version}/umap_dual_view_{target1}_{target2}_spec.png', dpi=300)
+    else:
+        plt.savefig(f'umap_output/{version}/umap_dual_view_{target1}_{target2}.png', dpi=300)
     plt.close()
 
 
 if __name__ == "__main__":
     version = short_id()
-    create_umap("score", "mental", version)
-    create_umap("score", "background", version)
-    create_umap("mental", "background", version)
-    create_umap("mental", "score", version)
-    create_umap("background", "score", version)
-    create_umap("background", "mental", version)
+    create_umap("score", "mental", version, spec=False)
+    create_umap("score", "background", version, spec=False)
+    create_umap("mental", "background", version, spec=False)
+    create_umap("score", "mental", version, spec=True)
+    create_umap("score", "background", version, spec=True)
+    # create_umap("mental", "score", version)
+    # create_umap("background", "score", version)
+    # create_umap("background", "mental", version)
     print("UMAP visualization completed and saved.")
