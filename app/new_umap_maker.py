@@ -17,7 +17,7 @@ from utils.column_utils import convert_boolean_to_int
 from utils.logger import short_id
 
 
-def _target_selector(target, for_what):
+def _target_selector(target, for_what,source):
     if target == "mental":
         if for_what == "cluster":
             return "mental_cluster"
@@ -32,12 +32,13 @@ def _target_selector(target, for_what):
         if for_what == "cluster":
             return "score_cluster"
         elif for_what == "feature":
-            return _get_score_features()
+            return _get_score_features(source)
     else:
         raise ValueError(f"Unknown target: {target}")
 
-def _get_score_features():
-    input_type = "new"
+
+def _get_score_features(source):
+    input_type = source
     if input_type == "default":
         return get_default_score_features()
     elif input_type == "test":
@@ -46,24 +47,24 @@ def _get_score_features():
         return get_score_features()
 
 
-def _clustering_feature_getter(target1, target2, spec):
+def _clustering_feature_getter(target1, target2, spec, source):
     if spec:
-        return _get_score_features()
+        return _get_score_features(source)
     if target2 == "mental":
         if target1 == "background":
             return get_mental_features_for_scoring() + get_background_features_for_scoring()
         elif target1 == "score":
-            return _get_score_features() + get_mental_features_for_scoring()
+            return _get_score_features(source) + get_mental_features_for_scoring()
     elif target2 == "background":
         if target1 == "mental":
             return get_mental_features_for_scoring() + get_background_features_for_scoring()
         elif target1 == "score":
-            return get_background_features_for_scoring() + _get_score_features()
+            return get_background_features_for_scoring() + _get_score_features(source)
     elif target2 == "score":
         if target1 == "mental":
-            return _get_score_features() + get_mental_features_for_scoring()
+            return _get_score_features(source) + get_mental_features_for_scoring()
         elif target1 == "background":
-            return _get_score_features() + get_background_features_for_scoring()
+            return _get_score_features(source) + get_background_features_for_scoring()
 
 
 def _data_frame_fetcher():
@@ -81,15 +82,16 @@ def _data_frame_fetcher():
 
 
 # 建立 Spark Session
-def create_umap(target1, target2, version, spec = False):
+def create_umap(target1, target2, version, source, spec=False, ):
     df = _data_frame_fetcher()
 
     # 特徵欄位（不包含 student_id）
-    feature_cols = [col for col in _clustering_feature_getter(target1, target2, spec) if col != CandidateColumns.student_id]
+    feature_cols = [col for col in _clustering_feature_getter(target1, target2, spec, source) if
+                    col != CandidateColumns.student_id]
 
     # 取出需要欄位
-    scaled_selected = df.select(*feature_cols, _target_selector(target1, "cluster"),
-                                _target_selector(target2, "cluster"))
+    scaled_selected = df.select(*feature_cols, _target_selector(target1, "cluster", source),
+                                _target_selector(target2, "cluster",source))
     scaled_pd = scaled_selected.toPandas()
     features_array = scaled_pd[feature_cols].values
 
@@ -100,8 +102,8 @@ def create_umap(target1, target2, version, spec = False):
     scaled_pd['umap2'] = umap_embedding[:, 1]
 
     # 分群 label
-    score_labels = np.unique(scaled_pd[_target_selector(target1, "cluster")])
-    background_labels = np.unique(scaled_pd[_target_selector(target2, "cluster")])
+    score_labels = np.unique(scaled_pd[_target_selector(target1, "cluster",source)])
+    background_labels = np.unique(scaled_pd[_target_selector(target2, "cluster",source)])
 
     # 自動配色 colormap
     max_k = max(len(score_labels), len(background_labels))
@@ -114,7 +116,7 @@ def create_umap(target1, target2, version, spec = False):
     scatter1 = axes[0].scatter(
         scaled_pd['umap1'],
         scaled_pd['umap2'],
-        c=scaled_pd[_target_selector(target1, "cluster")],
+        c=scaled_pd[_target_selector(target1, "cluster",source)],
         cmap=cmap_dynamic,
         s=50,
         alpha=0.8
@@ -129,7 +131,7 @@ def create_umap(target1, target2, version, spec = False):
     scatter2 = axes[1].scatter(
         scaled_pd['umap1'],
         scaled_pd['umap2'],
-        c=scaled_pd[_target_selector(target2, "cluster")],
+        c=scaled_pd[_target_selector(target2, "cluster",source)],
         cmap=cmap_dynamic,
         s=50,
         alpha=0.8
@@ -145,19 +147,20 @@ def create_umap(target1, target2, version, spec = False):
     if not os.path.exists(f'umap_output/{version}'):
         os.mkdir(f'umap_output/{version}')
     if spec:
-        plt.savefig(f'umap_output/{version}/umap_dual_view_{target1}_{target2}_spec.png', dpi=300)
+        plt.savefig(f'umap_output/{version}/umap_dual_view_{source}_{target1}_{target2}_spec.png', dpi=300)
     else:
-        plt.savefig(f'umap_output/{version}/umap_dual_view_{target1}_{target2}.png', dpi=300)
+        plt.savefig(f'umap_output/{version}/umap_dual_view_{source}_{target1}_{target2}.png', dpi=300)
     plt.close()
 
 
 if __name__ == "__main__":
     version = short_id()
-    create_umap("score", "mental", version, spec=False)
-    create_umap("score", "background", version, spec=False)
-    create_umap("mental", "background", version, spec=False)
-    create_umap("score", "mental", version, spec=True)
-    create_umap("score", "background", version, spec=True)
+    for source in ["default", "new", "test"]:
+        create_umap("score", "mental", version, source, spec=False)
+        create_umap("score", "background", version, source, spec=False)
+        create_umap("mental", "background", version, source, spec=False)
+        create_umap("score", "mental", version, source, spec=True)
+        create_umap("score", "background", version, source, spec=True)
     # create_umap("mental", "score", version)
     # create_umap("background", "score", version)
     # create_umap("background", "mental", version)

@@ -1,0 +1,13 @@
+score:
+D : 只有 total score
+v0(score) : kaggle上的權重
+ml : ml 權重
+v1 : brute force 權重
+
+mental:
+v1 : 直接ml
+v2 : 自訂邏輯+ml
+
+background:
+v1 : ml
+v2 :交叉ml

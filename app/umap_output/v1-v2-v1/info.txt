@@ -1,0 +1,22 @@
+using : 
+score-scoring:
+(col(CandidateColumns.midterm_score)) * 0.3 +
+        (col(CandidateColumns.final_score)) * 0.4 +
+        (col(CandidateColumns.assignments_avg)) * 0.1 +
+        (col(CandidateColumns.quizzes_avg)) * 0.1 +
+        col(CandidateColumns.projects_score) * 0.1
+
+mental-scoring:
+_get_sleep_score(col(CandidateColumns.sleep_hours_per_night)) +
+        _get_attendance_score(col(CandidateColumns.attendance_percent)) +
+        _get_extracurricular_activities_score(col(CandidateColumns.b_extracurricular_activities)) +
+        _get_internet_access_score(col(CandidateColumns.b_internet_access_at_home)) +
+        col(CandidateColumns.stress_level) 
+with L.R. weight!
+
+background-scoring:
+CandidateColumns.study_hours_per_week,
+        CandidateColumns.b_extracurricular_activities,
+        CandidateColumns.int_parent_edu,
+        CandidateColumns.int_family_inc,
+with L.R. weight!

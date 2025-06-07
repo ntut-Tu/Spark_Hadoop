@@ -18,6 +18,13 @@ def compute_score_score(df):
     df1 = _apply_custom_scaling(df1, CandidateColumns.final_performance_score)  # z-score
     return df1
 
+def compute_score_default(df):
+    df1 = df.withColumn(
+        CandidateColumns.final_performance_score,
+        col(CandidateColumns.total_score)
+    )
+    df1 = _apply_custom_scaling(df1, CandidateColumns.final_performance_score)  # z-score
+    return df1
 
 def compute_score_score_v1(df):
     score_expr = (
@@ -41,8 +48,8 @@ def _learn_score_weight(df, features):
     lr = LinearRegression(
         featuresCol=feature_output_col,
         labelCol=CandidateColumns.total_score,
-        elasticNetParam = 0.6,
-        regParam = 0.01
+        # elasticNetParam = 0.6,
+        # regParam = 0.01
     )
     model = lr.fit(df_vector)
     df.drop(feature_output_col)

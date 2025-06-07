@@ -86,8 +86,8 @@ def _learn_background_weight_v1(df, features):
     lr = LinearRegression(
         featuresCol=feature_output_col,
         labelCol=CandidateColumns.final_performance_score,
-        elasticNetParam=0.6,
-        regParam=0.005
+        # elasticNetParam=0.6,
+        # regParam=0.005
     )
     model = lr.fit(df_vector)
     df.drop(feature_output_col)
@@ -134,8 +134,8 @@ def _learn_background_weight_v2(df, base_features):
     lr = LinearRegression(
         featuresCol=feature_output_col,
         labelCol=CandidateColumns.final_performance_score,
-        elasticNetParam=0.6,  # 可以調 0~1
-        regParam=0.005  # L1 會自動濾掉不重要特徵
+        # elasticNetParam=0.6,  # 可以調 0~1
+        # regParam=0.005  # L1 會自動濾掉不重要特徵
     )
     model = lr.fit(df_vector)
 
